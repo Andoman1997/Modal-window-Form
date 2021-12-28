@@ -5,10 +5,8 @@ import { v4 as uuid_v4 } from "uuid";
 import 'antd/dist/antd.css'
 import { Modal, Button } from 'antd';
 import { Switch } from 'antd';
-import { Input } from 'antd';
 
 
-const { TextArea } = Input;
 
 interface FormConfigItem {
   id: string;
@@ -39,26 +37,27 @@ function App() {
   const [selectPrice, setSelectPrice] = useState<any>(0);
   const [switchPrice1, setSwitchPrice1] = useState<any>(false);
   const [switchPrice2, setSwitchPrice2] = useState<any>(false);
-  const [totalPrice, setTotalPrice] = useState<any>(0);
+  
+
+  const totalPrice = selectPrice + switchPrice1 + switchPrice2
 
 
+  
 
 
-  const onAdd100 = () => {
-      setSwitchPrice1(!switchPrice1)
+  const onChange100 = () => {
         if(!switchPrice1) {
-          setTotalPrice(totalPrice + 100)
+          setSwitchPrice1(100)
         } else {
-          setTotalPrice(totalPrice - 100)
+          setSwitchPrice1(0)
         }
-  }
+  } 
 
-  const onAdd200 = () => {
-    setSwitchPrice2(!switchPrice2)
+  const onChange200 = () => {
       if(!switchPrice2) {
-        setTotalPrice(totalPrice + 200)
+        setSwitchPrice2(200)
       } else {
-        setTotalPrice(totalPrice - 200)
+        setSwitchPrice2(0)
       }
   }
 
@@ -77,7 +76,7 @@ function App() {
 
   useEffect(() => {
     let initialValidation: any = {}
-    _formConfig.forEach(el => initialValidation[el.id] = true)
+    _formConfig.forEach(el => initialValidation[el.name] = true)
     setValidation(initialValidation)
   }, []);
 
@@ -85,15 +84,15 @@ function App() {
     let validation: any = {};
 
     _formConfig.forEach((el) => {
-      const value: any = values[el.id];
+      const value: any = values[el.name];
 
       if (el.validation && el.validation.required && !value)
-        validation[el.id] = false;
+        validation[el.name] = false;
       else if (el.validation && el.validation.regexp) {
         const regexp = new RegExp(el.validation.regexp);
         const isValid = regexp.test(value);
-        validation[el.id] = isValid;
-      } else validation[el.id] = true;
+        validation[el.name] = isValid;
+      } else validation[el.name] = true;
     });
 
     return validation;
@@ -101,12 +100,12 @@ function App() {
 
   const formSubmit = () => {
     const validation = validate();
+    console.log(values)
     setValidation(validation);
-    console.log(validation);
     const hasErrors = Object.values(validation).includes(false);
-    if (hasErrors) return;
+    if (hasErrors) return {
+    };
 
-    alert( "Form is valid" + "  " + Object.entries(validation));
   };
 
   const renderInput = (el: any) => {
@@ -114,36 +113,65 @@ function App() {
       case "text":
         return (
           <input
-            className={!validation[el.id] ? "invalid" : "" }
+            className={!validation[el.name] ? "invalid" : "" }
             key={el.id}
             type={el.type}
             placeholder={el.placeholder}
             value={values[el.name]}
-            onChange={(e) => setValues({ ...values, [el.id]: e.target.value })}
+            onChange={(e) => 
+              setValues({ ...values, [el.name]: e.target.value })}
           />
         );
 
 
       case "select":
         return (
-           
           <label className='select-label'>Product type *: 
               <select 
                 key={el.id}
-                className={!validation[el.id] ? "invalid" : "" }
-                onChange={(e) => setValues({ ...values, [el.id]: e.target.value })}
+                className={!validation[el.name] ? "invalid" : "" }
+                onChange={(e) => 
+                  setSelectPrice(parseInt(e.target.value) )
+                }
                  >
                 {el.options.map((option: any, i: any) => (
-                  <option key={i} value={values[el.id]}>
-                    {option}
+                  <option key={i} value={option[1]}>
+                    {option[0]}
                     
                   </option>
                   
                 ))}
               </select>
+          </label>  
+       );
+
+       case "checkbox":
+        return (
+          <label className='checkbox-label' >
+            {el.label}
+            <Switch
+              key={el.id}
+              checked={values[el.id]}
+              onChange={(e) =>  {
+                  el.name === 'switch1' ? onChange100() : onChange200()
+                }
+                
+              }
+            />
+           
           </label>
-              
-        )      
+        );
+          case "comment":
+            return (
+              <input
+                className={!validation[el.name] ? "invalid" : "" }
+                key={el.id}
+                type={el.type}
+                placeholder={el.placeholder}
+                value={values[el.name]}
+                onChange={(e) => setValues({ ...values, [el.name]: e.target.value })}
+              />
+            );
     }
   };
 
@@ -160,11 +188,8 @@ function App() {
          {_formConfig.map(renderInput)}
          
          
-          <label>Additional features for $100</label> <Switch  onChange={onAdd100}/>
-          <label>Additional features for $200</label> <Switch  onChange={onAdd200} />
       
 
-        <TextArea rows={4} placeholder="Type your comment" />
 
         <div className='total-price'>
           <span >Total price</span>

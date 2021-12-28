@@ -92,6 +92,11 @@ select {
     
 }
 
+.checkbox-label {
+    display: flex;
+    width: 102%;
+    justify-content: space-between;
+    }
 
 
 .submitBtn {
@@ -114,6 +119,7 @@ select {
 input.invalid,
 select.invalid {
     border: 1px solid red !important;
+    background: rgb(221, 186, 186)
 }
 
 label.invalid {

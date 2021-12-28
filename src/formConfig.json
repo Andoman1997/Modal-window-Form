@@ -31,28 +31,43 @@
        "label": "product-type",
         "name": "type",
         "options": [
-            {
-                "label": "Select product type",
-                "value": 0
-            },
-            {
-                "label": "Product $50",
-                "value": 50
-            },
-            {
-                "label": "Product $100",
-                "value": 100
-            },
-            {
-                "label": "Product $300",
-                "value": 300
-            }
+            [ 
+                "Select product type",
+                0
+            ],
+            [ 
+                "Product $50",
+                50
+            ],
+            [ 
+                "Product $100",
+                100
+            ],
+            [ 
+                "Product $300",
+                300
+            ]
         ],
 
         "validation": {
           "required": true,
           "regexp": ""
         }
-      }
+      },
+      {
+        "type": "checkbox",
+        "name": "switch1",
+        "label": "Additional features for $100"
+      },
+      {
+        "type": "checkbox",
+        "name": "switch2",
+        "label": "Additional features for $200"
+      },
    
+      {
+        "type": "text",
+        "name": "comment",
+        "placeholder": "Type message"
+    }
 ]
